@@ -5,6 +5,8 @@ var autoprefixer = require('gulp-autoprefixer');
 var cleanCSS = require('gulp-clean-css');
 var uglify = require('gulp-uglify');
 var concat = require('gulp-concat');
+var merge = require('merge-stream');
+var spritesmith = require('gulp.spritesmith');
 
 var config = {
     scssIn: 'src/scss/**/*.scss',
@@ -16,7 +18,10 @@ var config = {
     minJsOut: 'src/dist/min-js',
     minConcatJsOut: 'src/dist/min-concat-js',
     minConcatCssFileName: 'styles.css',
-    minConcatJsFileName: 'scripts.js'
+    minConcatJsFileName: 'scripts.js',
+    spriteIn: 'src/img/sprite/**/*.{jpg,jpeg,png}',
+    spriteImgOut: 'src/dist/sprite',
+    spriteClassesOut: 'src/css'
 };
 
 gulp.task('sass', function() {
@@ -28,6 +33,22 @@ gulp.task('sass', function() {
         }))
         .pipe(sourcemaps.write())                                               /* add sourcemaps to generated styles.css file */
         .pipe(gulp.dest(config.cssFromScssOut));                                /* lotation to save generated styles.css file */
+});
+
+gulp.task('sprite', function () {
+    var spriteData = gulp.src(config.spriteIn)                                  /* input location for images to sprite */
+            .pipe(spritesmith({
+                imgName: 'sprite.png',                                          /* sprite file name */
+                cssName: 'sprite.css'                                           /* .css/.scss file name with classes for images from sprite */
+            }));
+
+    var imgStream = spriteData.img
+        .pipe(gulp.dest(config.spriteImgOut));                                  /* output location for sprite img file */
+    
+    var cssStream = spriteData.css
+        .pipe(gulp.dest(config.spriteClassesOut));                              /* output location for .css/.scss file */
+   
+    return merge(imgStream, cssStream);                                         /* Return a merged stream to handle both `end` events */
 });
 
 gulp.task('min-css', function() {                                               /* generate minified file version of styles.css */
@@ -56,9 +77,10 @@ gulp.task('min-concat-js', function() {                                         
            .pipe(gulp.dest(config.minConcatJsOut));                             /* output location to save new .js file */
 });
 
-gulp.task('watch', ['sass', 'min-css'], function() {                            /* After any change in .scss files, we will generate new styles.css and minified styles.css files */
-    gulp.watch(config.scssIn, ['sass']);
+gulp.task('watch', ['sass', 'min-css', 'sprite'], function() {                   
+    gulp.watch(config.scssIn, ['sass']);                                        /* After any change in .scss files, we will generate new styles.css and minified styles.css files */
     gulp.watch(config.cssIn, ['min-css']);
+    gulp.watch(config.spriteIn, ['sprite']);                                    /* After any change in img/sprite folder, we will generate new sprite file and .css file with classes for images from sprite */
 });
 
 gulp.task('default', ['watch']);

@@ -1,1 +1,1 @@
-.button{background:#000;color:#fff;font-size:14px;padding:6px 15px 4px;text-align:center;display:inline-block;cursor:pointer}@media screen and (min-width:768px){.button{color:#0f0}}
+.icon-sprite{background-image:url(../dist/sprite/sprite.png);display:inline-block}.button{background:#000;color:#fff;font-size:14px;padding:6px 15px 4px;text-align:center;display:inline-block;cursor:pointer;vertical-align:top}@media screen and (min-width:768px){.button{color:red}}

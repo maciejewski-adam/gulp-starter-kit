@@ -1,11 +1,19 @@
+.icon {
+    &-sprite {
+        background-image: url(../dist/sprite/sprite.png);
+        display: inline-block;
+    }
+}
+
 .button {
    background: $button-bg-color;
-   color: $button-text-color;
+   color: $button-text-color;  
    font-size: 14px;
    padding: 6px 15px 4px;
    text-align: center;
    display: inline-block;
    cursor: pointer;
+   vertical-align: top;
 }
 
 @import "mq";
